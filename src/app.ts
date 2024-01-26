@@ -3,7 +3,7 @@ import path from 'path'
 import cors from 'cors'
 import helmet from 'helmet'
 import hpp from 'hpp'
-import { notFound } from './middlewares'
+import { notFound, errorHandler } from './middlewares'
 import { generateRSAKeys } from './utils'
 import { apiRouter } from './api'
 const app = express()
@@ -33,5 +33,6 @@ app.get('/', (req, res) => {
 
 app.use('/api', apiRouter)
 app.use(notFound)
+app.use(errorHandler)
 
 export default app

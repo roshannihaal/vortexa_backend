@@ -6,13 +6,13 @@ export const getCertificate = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const publicKey = getPublicKey()
-  const resStatusCode = 200
-  res
-    .status(resStatusCode)
-    .send({ statusCode: resStatusCode, message: 'Public Key', publicKey })
   try {
+    const publicKey = getPublicKey()
+    const resStatusCode = 200
+    res
+      .status(resStatusCode)
+      .send({ statusCode: resStatusCode, message: 'Public Key', publicKey })
   } catch (error) {
-    console.error(`Error getting public key: ${error}`)
+    next(error)
   }
 }
