@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: vortexa-api
+    network_mode: host
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+networks:
+  vortexa-backend:
+    name: vortexa-network
+    driver: bridge
