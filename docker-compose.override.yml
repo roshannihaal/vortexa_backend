@@ -13,6 +13,8 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=${PORT}
+      - RSA_BITS=${RSA_BITS}
+      - RSA_PASSPHRASE=${RSA_PASSPHRASE}
 
 networks:
   vortexa-backend:
