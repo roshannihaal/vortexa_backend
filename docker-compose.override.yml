@@ -15,6 +15,22 @@ services:
       - PORT=${PORT}
       - RSA_BITS=${RSA_BITS}
       - RSA_PASSPHRASE=${RSA_PASSPHRASE}
+  db:
+    image: postgres:13.13
+    container_name: vortexa-db
+    restart: always
+    volumes:
+      - ./DATA/DB_DATA:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+  adminer:
+    image: adminer:4.8.1-standalone
+    container_name: vortexa-adminer
+    restart: always
+    ports:
+      - 8080:8080
 
 networks:
   vortexa-backend:

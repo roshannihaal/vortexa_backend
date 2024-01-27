@@ -10,6 +10,9 @@ export const ConfigSchema = z.object({
     })
     .transform((value) => parseInt(value, 10)),
   RSA_PASSPHRASE: z.string().trim(),
+  POSTGRES_USER: z.string().trim(),
+  POSTGRES_PASSWORD: z.string().trim(),
+  POSTGRES_DB: z.string().trim(),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>
