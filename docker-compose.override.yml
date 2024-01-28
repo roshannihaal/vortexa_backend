@@ -5,8 +5,7 @@ services:
     networks:
       - vortexa-network
     build:
-      context: .
-      dockerfile: Dockerfile
+      target: development
     volumes:
       - ./:/usr/src/app
     environment:
