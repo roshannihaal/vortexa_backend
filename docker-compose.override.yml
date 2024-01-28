@@ -18,6 +18,15 @@ services:
   adminer:
     networks:
       - vortexa-network
+  redis:
+    image: redis/redis-stack:6.2.6-v11
+    networks:
+      - vortexa-network
+    volumes:
+      - ./DATA/REDIS_DATA:/data
+    ports:
+      - ${REDIS_INSIGHT_EXPOSE_PORT}:8001
+
 
 networks:
   vortexa-network:
