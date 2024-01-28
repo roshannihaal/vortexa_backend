@@ -15,6 +15,10 @@ export const ConfigSchema = z.object({
   POSTGRES_DB: z.string().trim(),
   JWT_SECRET: z.string().trim(),
   JWT_EXPIRES_IN: z.string().trim(),
+  HASH_ROUNDS: z
+    .string()
+    .trim()
+    .transform((value) => parseInt(value, 10)),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>

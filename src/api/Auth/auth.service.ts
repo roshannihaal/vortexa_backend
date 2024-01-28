@@ -4,9 +4,9 @@ import {
   CheckAndReturnUserResponseDTO,
   LoginDTO,
   SignupDTO,
-  UserDTO,
 } from './auth.dto'
 import bcrypt from 'bcrypt'
+import { config } from '../../config'
 
 const prisma = new PrismaClient()
 
@@ -123,7 +123,8 @@ export const checkAndReturnUser = async (
 }
 
 const hashPassword = (password: string): string => {
-  const result = bcrypt.hashSync(password, 10)
+  const hashRounds = config.HASH_ROUNDS
+  const result = bcrypt.hashSync(password, hashRounds)
   return result
 }
 
