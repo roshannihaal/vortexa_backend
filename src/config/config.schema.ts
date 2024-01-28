@@ -19,6 +19,8 @@ export const ConfigSchema = z.object({
     .string()
     .trim()
     .transform((value) => parseInt(value, 10)),
+  REDIS_HOST: z.string().trim(),
+  REDIS_EXPOSE_PORT: z.string().trim(),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>

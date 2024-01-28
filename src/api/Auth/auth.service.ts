@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prismaClient } from '../../utils/PrismaClient'
 import {
   CheckAndCreateUserResponseDTO,
   CheckAndReturnUserResponseDTO,
@@ -7,8 +7,6 @@ import {
 } from './auth.dto'
 import bcrypt from 'bcrypt'
 import { config } from '../../config'
-
-const prisma = new PrismaClient()
 
 export const checkAndCreateUser = async (
   userDetails: SignupDTO,
@@ -19,7 +17,7 @@ export const checkAndCreateUser = async (
       message: '',
     }
 
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await prismaClient.user.findFirst({
       select: {
         email: true,
         username: true,
@@ -32,7 +30,7 @@ export const checkAndCreateUser = async (
     if (!existingUser) {
       const hashedPassword = hashPassword(userDetails.password)
 
-      const newUser = await prisma.user.create({
+      const newUser = await prismaClient.user.create({
         data: {
           username: userDetails.username,
           email: userDetails.email,
@@ -66,7 +64,7 @@ export const checkAndReturnUser = async (
   userDetails: LoginDTO,
 ): Promise<CheckAndReturnUserResponseDTO> => {
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prismaClient.user.findFirst({
       select: {
         email: true,
         username: true,

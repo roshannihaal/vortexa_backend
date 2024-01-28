@@ -15,8 +15,12 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - HASH_ROUNDS=${HASH_ROUNDS}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_EXPOSE_PORT=${REDIS_EXPOSE_PORT}
     ports:
       - ${PORT}:${PORT}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   db:
     image: postgres:13.13
     container_name: vortexa-db

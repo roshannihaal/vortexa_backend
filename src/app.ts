@@ -4,7 +4,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import hpp from 'hpp'
 import { notFound, errorHandler } from './middlewares'
-import { generateRSAKeys } from './utils'
+import { connectToRedis, generateRSAKeys } from './utils'
 import { apiRouter } from './api'
 const app = express()
 const publicDirectoryPath = path.join(__dirname, '../public')
@@ -21,6 +21,7 @@ app.disable('x-powered-by')
 
 try {
   generateRSAKeys()
+  connectToRedis()
 } catch (error) {
   console.error(`Seriver initialization error: ${error}`)
   process.exit(1)
