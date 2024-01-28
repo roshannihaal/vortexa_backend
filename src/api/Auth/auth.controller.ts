@@ -47,18 +47,23 @@ export const logIn = async (
     const data = req.body
 
     // Checks if the provided credentials are correct
-    const user = await checkAndReturnUser(data)
-    if (!user) {
-      res.status(401)
-      throw new Error('Invalid credentials')
+    const response = await checkAndReturnUser(data)
+    if (!response.authenticated) {
+      if (response.accountExists) {
+        res.status(401)
+      } else {
+        res.status(404)
+      }
+      throw new Error(response.message)
     }
 
-    const token = generateJwtToken(user.id)
+    const token = response.user ? generateJwtToken(response.user.id) : null
     const resStatusCode = 200
     res.status(resStatusCode).send({
       statusCode: resStatusCode,
       message: 'Successfully logged in',
       token,
+      user: response.user,
     })
   } catch (error) {
     next(error)

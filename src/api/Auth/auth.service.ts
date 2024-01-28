@@ -1,66 +1,60 @@
 import { PrismaClient } from '@prisma/client'
 import {
   CheckAndCreateUserResponseDTO,
+  CheckAndReturnUserResponseDTO,
   LoginDTO,
   SignupDTO,
   UserDTO,
 } from './auth.dto'
+import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
 export const checkAndCreateUser = async (
   userDetails: SignupDTO,
 ): Promise<CheckAndCreateUserResponseDTO> => {
-  let created: boolean
-  let message: string
-  let newUser: UserDTO
-  let response: CheckAndCreateUserResponseDTO
   try {
-    const user = await prisma.user.findFirst({
+    let body: CheckAndCreateUserResponseDTO = {
+      created: false,
+      message: '',
+    }
+
+    const existingUser = await prisma.user.findFirst({
       select: {
         email: true,
         username: true,
       },
       where: {
-        OR: [
-          {
-            email: userDetails.email,
-          },
-          {
-            username: userDetails.username,
-          },
-        ],
+        OR: [{ email: userDetails.email }, { username: userDetails.username }],
       },
     })
 
-    if (!user) {
-      newUser = await prisma.user.create({
+    if (!existingUser) {
+      const hashedPassword = hashPassword(userDetails.password)
+
+      const newUser = await prisma.user.create({
         data: {
           username: userDetails.username,
           email: userDetails.email,
           name: userDetails.name,
-          password: userDetails.password,
+          password: hashedPassword,
         },
       })
-      created = true
-      message = 'User created successfully'
-      response = {
-        created,
-        message,
+
+      body = {
+        created: true,
+        message: 'User created successfully',
         user: newUser,
       }
     } else {
-      created = false
-      if (user.email === userDetails.email) {
-        message = 'Email already exists'
+      if (existingUser.email === userDetails.email) {
+        body.message = 'Email already exists'
       } else {
-        message = 'Username already exists'
-      }
-      response = {
-        created,
-        message,
+        body.message = 'Username already exists'
       }
     }
+
+    const response = CheckAndCreateUserResponseDTO.parse(body)
 
     return response
   } catch (error) {
@@ -70,7 +64,7 @@ export const checkAndCreateUser = async (
 
 export const checkAndReturnUser = async (
   userDetails: LoginDTO,
-): Promise<UserDTO | null> => {
+): Promise<CheckAndReturnUserResponseDTO> => {
   try {
     const user = await prisma.user.findFirst({
       select: {
@@ -78,34 +72,65 @@ export const checkAndReturnUser = async (
         username: true,
         id: true,
         name: true,
+        password: true,
       },
       where: {
         OR: [
           {
-            AND: [
-              {
-                username: userDetails.id,
-              },
-              {
-                password: userDetails.password,
-              },
-            ],
+            username: userDetails.id,
           },
           {
-            AND: [
-              {
-                email: userDetails.id,
-              },
-              {
-                password: userDetails.password,
-              },
-            ],
+            email: userDetails.id,
           },
         ],
       },
     })
-    return user
+
+    let message: string
+    let authenticated: boolean
+    let accountExists: boolean
+
+    if (user) {
+      const isCredentialsCorrect = validatePassword(
+        userDetails.password,
+        user.password,
+      )
+
+      message = isCredentialsCorrect
+        ? 'Login successful'
+        : 'Invalid credentials'
+      authenticated = isCredentialsCorrect
+      accountExists = true
+    } else {
+      message = 'Account does not exist'
+      authenticated = false
+      accountExists = false
+    }
+
+    const body = {
+      message,
+      authenticated,
+      accountExists,
+      user: user || undefined,
+    }
+
+    const response = CheckAndReturnUserResponseDTO.parse(body)
+
+    return response
   } catch (error) {
     throw error
   }
+}
+
+const hashPassword = (password: string): string => {
+  const result = bcrypt.hashSync(password, 10)
+  return result
+}
+
+const validatePassword = (
+  password: string,
+  hashedPassword: string,
+): boolean => {
+  const result = bcrypt.compareSync(password, hashedPassword)
+  return result
 }

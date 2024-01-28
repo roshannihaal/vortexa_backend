@@ -72,3 +72,13 @@ export const CheckAndCreateUserResponseDTO = z.object({
 export type CheckAndCreateUserResponseDTO = z.input<
   typeof CheckAndCreateUserResponseDTO
 >
+
+export const CheckAndReturnUserResponseDTO = z.object({
+  message: z.string(),
+  authenticated: z.boolean(),
+  accountExists: z.boolean(),
+  user: UserDTO.optional(),
+})
+export type CheckAndReturnUserResponseDTO = z.input<
+  typeof CheckAndReturnUserResponseDTO
+>
