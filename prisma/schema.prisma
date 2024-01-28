@@ -21,8 +21,9 @@ enum FLAMES {
 
 model user {
   id                    String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username              String           @unique
   email                 String           @unique
-  name                  String           @unique
+  name                  String
   password              String
   image                 Bytes?
   flames_history        flames_history[]

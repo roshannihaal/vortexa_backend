@@ -13,6 +13,8 @@ export const ConfigSchema = z.object({
   POSTGRES_USER: z.string().trim(),
   POSTGRES_PASSWORD: z.string().trim(),
   POSTGRES_DB: z.string().trim(),
+  JWT_SECRET: z.string().trim(),
+  JWT_EXPIRES_IN: z.string().trim(),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>
