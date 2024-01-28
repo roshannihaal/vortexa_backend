@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
 import { LoginDTO, SignupDTO } from './auth.dto'
-import { generateJwtToken } from '../../utils'
+import {
+  generateJwtToken,
+  addNewSession,
+  isMaxSessionsReached,
+} from '../../utils'
 import { checkAndCreateUser, checkAndReturnUser } from './auth.service'
 
 export const signUp = async (
@@ -25,7 +29,11 @@ export const signUp = async (
     }
 
     // Generates the token
-    const token = response.user ? generateJwtToken(response.user.id) : null
+    let token, sessionId
+    if (response.user) {
+      ;({ token, sessionId } = generateJwtToken(response.user.id))
+      await addNewSession(response.user.id, sessionId, token)
+    }
 
     const resStatusCode = 200
     res.status(resStatusCode).send({
@@ -57,7 +65,17 @@ export const logIn = async (
       throw new Error(response.message)
     }
 
-    const token = response.user ? generateJwtToken(response.user.id) : null
+    let token, sessionId
+    if (response.user) {
+      const isMaxSessionReached = await isMaxSessionsReached(response.user.id)
+      if (isMaxSessionReached) {
+        res.status(401)
+        throw new Error('Max sessions reached')
+      }
+      ;({ token, sessionId } = generateJwtToken(response.user.id))
+      await addNewSession(response.user.id, sessionId, token)
+    }
+
     const resStatusCode = 200
     res.status(resStatusCode).send({
       statusCode: resStatusCode,
