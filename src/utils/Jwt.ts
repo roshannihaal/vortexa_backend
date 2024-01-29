@@ -1,14 +1,14 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { randomUUID } from 'crypto'
 import { config } from '../config'
-import { generateJwtTokenResponse } from './utils.dto'
+import { GenerateJwtTokenResponse } from './utils.dto'
 
 const getNewSession = () => {
   const sessionId = randomUUID()
   return sessionId
 }
 
-export const generateJwtToken = (userId: string): generateJwtTokenResponse => {
+export const generateJwtToken = (userId: string): GenerateJwtTokenResponse => {
   const sessionId = getNewSession()
   const jwtSecret = config.JWT_SECRET
   const jwtExpiresIn = config.JWT_EXPIRES_IN

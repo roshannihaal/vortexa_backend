@@ -2,6 +2,7 @@ import { createClient, RedisClientType } from 'redis'
 import { config } from '../config'
 import { getJwtExpiry } from './Jwt'
 import _ from 'lodash'
+import { RedisSessionObject } from './utils.dto'
 
 const redisHost = config.REDIS_HOST
 const redisPort = config.REDIS_EXPOSE_PORT
@@ -80,11 +81,7 @@ const parseData = (data: string[]) => {
   return parsedData
 }
 
-const getKeyFromObject = (data: {
-  userId: string
-  sessionId: string
-  tokenExpTime: number
-}) => {
+const getKeyFromObject = (data: RedisSessionObject) => {
   const stringifiedData = `${data.userId}_${data.sessionId}_${data.tokenExpTime}`
   return stringifiedData
 }
