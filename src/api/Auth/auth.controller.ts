@@ -4,6 +4,7 @@ import {
   generateJwtToken,
   addNewSession,
   isMaxSessionsReached,
+  removeOldestSession,
 } from '../../utils'
 import { checkAndCreateUser, checkAndReturnUser } from './auth.service'
 
@@ -52,10 +53,10 @@ export const logIn = async (
   next: NextFunction,
 ) => {
   try {
-    const data = req.body
+    const { body, query } = req
 
     // Checks if the provided credentials are correct
-    const response = await checkAndReturnUser(data)
+    const response = await checkAndReturnUser(body)
     if (!response.authenticated) {
       if (response.accountExists) {
         res.status(401)
@@ -69,8 +70,12 @@ export const logIn = async (
     if (response.user) {
       const isMaxSessionReached = await isMaxSessionsReached(response.user.id)
       if (isMaxSessionReached) {
-        res.status(401)
-        throw new Error('Max sessions reached')
+        if (query.force) {
+          await removeOldestSession(response.user.id)
+        } else {
+          res.status(401)
+          throw new Error('Max sessions reached')
+        }
       }
       ;({ token, sessionId } = generateJwtToken(response.user.id))
       await addNewSession(response.user.id, sessionId, token)

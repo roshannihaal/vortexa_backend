@@ -4,5 +4,6 @@ export {
   connectToRedis,
   addNewSession,
   isMaxSessionsReached,
+  removeOldestSession,
 } from './RedisClient'
 export { prismaClient } from './PrismaClient'
