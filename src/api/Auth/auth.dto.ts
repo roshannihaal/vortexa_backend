@@ -69,6 +69,7 @@ export const LoginQueryDTO = z.object({
     .refine((value) => ['true', 'false'].includes(value), {
       message: 'force should be either true or false',
     })
+    .transform((value) => value === 'true')
     .optional(),
 })
 export type LoginQueryDTO = z.input<typeof LoginQueryDTO>
