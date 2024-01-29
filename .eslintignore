@@ -9,3 +9,13 @@
 **/Makefile
 
 **/dist
+
+**/*.toml
+
+**/*.prisma
+
+**/*.sql
+
+
+
+
