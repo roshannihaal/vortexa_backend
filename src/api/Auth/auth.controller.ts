@@ -14,26 +14,28 @@ export const signUp = async (
   next: NextFunction,
 ) => {
   try {
-    const data = req.body
+    const { body } = req
 
     // Password validation
-    if (data.password !== data.confirmPassword) {
+    if (body.password !== body.confirmPassword) {
       res.status(400)
       throw new Error('Passwords do not match')
     }
 
     // Checks if the username or emailid is already taken and creates a new user
-    const response = await checkAndCreateUser(data)
+    const response = await checkAndCreateUser(body)
     if (!response.created) {
       res.status(403)
       throw new Error(response.message)
     }
 
+    const { user } = response
+
     // Generates the token
     let token, sessionId
-    if (response.user) {
-      ;({ token, sessionId } = generateJwtToken(response.user.id))
-      await addNewSession(response.user.id, sessionId, token)
+    if (user) {
+      ;({ token, sessionId } = generateJwtToken(user.id))
+      await addNewSession(user.id, sessionId, token)
     }
 
     const resStatusCode = 200
@@ -66,27 +68,28 @@ export const logIn = async (
       throw new Error(response.message)
     }
 
+    const { user } = response
+
     let token, sessionId
-    if (response.user) {
-      const isMaxSessionReached = await isMaxSessionsReached(response.user.id)
+    if (user) {
+      const isMaxSessionReached = await isMaxSessionsReached(user.id)
       if (isMaxSessionReached) {
         if (query.force) {
-          await removeOldestSession(response.user.id)
+          await removeOldestSession(user.id)
         } else {
           res.status(401)
           throw new Error('Max sessions reached')
         }
       }
-      ;({ token, sessionId } = generateJwtToken(response.user.id))
-      await addNewSession(response.user.id, sessionId, token)
+      ;({ token, sessionId } = generateJwtToken(user.id))
+      await addNewSession(user.id, sessionId, token)
     }
 
     const resStatusCode = 200
     res.status(resStatusCode).send({
       statusCode: resStatusCode,
-      message: 'Successfully logged in',
+      message: response.message,
       token,
-      user: response.user,
     })
   } catch (error) {
     next(error)
