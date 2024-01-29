@@ -4,12 +4,14 @@ import cors from 'cors'
 import helmet from 'helmet'
 import hpp from 'hpp'
 import { notFound, errorHandler } from './middlewares'
-import { generateRSAKeys } from './utils'
+import { connectToRedis, generateRSAKeys } from './utils'
 import { apiRouter } from './api'
 const app = express()
 const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true }))
 
 app.use(cors())
 app.use(helmet())
@@ -19,6 +21,7 @@ app.disable('x-powered-by')
 
 try {
   generateRSAKeys()
+  connectToRedis()
 } catch (error) {
   console.error(`Seriver initialization error: ${error}`)
   process.exit(1)

@@ -25,13 +25,13 @@ export const generateRSAKeys = () => {
       fs.unlinkSync(privateKeyPath)
     }
 
-    const rsa_bits = config.RSA_BITS
-    const rsa_passphrase = config.RSA_PASSPHRASE
+    const rsaBits = config.RSA_BITS
+    const rsaPassphrase = config.RSA_PASSPHRASE
 
     generateKeyPair(
       'rsa',
       {
-        modulusLength: rsa_bits,
+        modulusLength: rsaBits,
         publicKeyEncoding: {
           type: 'spki',
           format: 'pem',
@@ -40,7 +40,7 @@ export const generateRSAKeys = () => {
           type: 'pkcs8',
           format: 'pem',
           cipher: 'aes-256-cbc',
-          passphrase: rsa_passphrase,
+          passphrase: rsaPassphrase,
         },
       },
       (error, publicKey, privateKey) => {

@@ -13,6 +13,18 @@ export const ConfigSchema = z.object({
   POSTGRES_USER: z.string().trim(),
   POSTGRES_PASSWORD: z.string().trim(),
   POSTGRES_DB: z.string().trim(),
+  JWT_SECRET: z.string().trim(),
+  JWT_EXPIRES_IN: z.string().trim(),
+  HASH_ROUNDS: z
+    .string()
+    .trim()
+    .transform((value) => parseInt(value, 10)),
+  REDIS_HOST: z.string().trim(),
+  REDIS_EXPOSE_PORT: z.string().trim(),
+  MAX_SESSIONS: z
+    .string()
+    .trim()
+    .transform((value) => parseInt(value, 10)),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>
