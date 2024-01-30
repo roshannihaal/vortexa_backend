@@ -1,18 +1,19 @@
 import { prismaClient } from '../../utils'
+import { FLAMES } from '@prisma/client'
 
 export const getFlamesResult = (name1: string, name2: string) => {
   const flames = ['F', 'L', 'A', 'M', 'E', 'S']
 
   const flamesMap = new Map([
-    ['F', 'Friend'],
-    ['L', 'Lover'],
-    ['A', 'Affection'],
-    ['M', 'Marriage'],
-    ['E', 'Enemy'],
-    ['S', 'Sibling'],
+    ['F', 'FRIEND'],
+    ['L', 'LOVER'],
+    ['A', 'AFFECTION'],
+    ['M', 'MARRIAGE'],
+    ['E', 'ENEMY'],
+    ['S', 'SIBLING'],
   ])
 
-  let result = 'No Result'
+  let result: FLAMES = 'NO_RESULT'
 
   // Remove all whitespace
   name1 = name1.replace(/\s/g, '')
@@ -70,8 +71,28 @@ export const getFlamesResult = (name1: string, name2: string) => {
     const uniqueLetter = flames.find((val) => val !== 'X')
 
     if (uniqueLetter) {
-      result = flamesMap.get(uniqueLetter) as string
+      result = flamesMap.get(uniqueLetter) as FLAMES
     }
   }
   return result
+}
+
+export const writeFlamesResult = async (
+  userId: string,
+  name1: string,
+  name2: string,
+  result: FLAMES,
+) => {
+  try {
+    await prismaClient.flames_history.create({
+      data: {
+        user_id: userId,
+        name1,
+        name2,
+        result,
+      },
+    })
+  } catch (error) {
+    throw error
+  }
 }

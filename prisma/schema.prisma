@@ -17,6 +17,7 @@ enum FLAMES {
   MARRIAGE
   ENEMY
   SIBLING
+  NO_RESULT
 }
 
 model user {

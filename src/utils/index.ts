@@ -1,5 +1,5 @@
 export { generateRSAKeys, getPublicKey } from './Crypto'
-export { generateJwtToken } from './Jwt'
+export { generateJwtToken, verifyJwtToken } from './Jwt'
 export {
   connectToRedis,
   addNewSession,
