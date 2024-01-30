@@ -1,4 +1,3 @@
-import { certRouter } from '../src/api/Cert'
 import { games } from './games'
 import { PrismaClient } from '@prisma/client'
 
