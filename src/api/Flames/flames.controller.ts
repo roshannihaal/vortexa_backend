@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
-import { CalculateFlamesDTO } from './flames.dto'
-import { getFlamesResult, writeFlamesResult } from './flames.service'
+import { CalculateFlamesDTO, FlamesHistoryDTO } from './flames.dto'
+import {
+  getFlamesResult,
+  writeFlamesResult,
+  getFlamesHistory,
+} from './flames.service'
 
 export const calculate = async (
   req: Request<unknown, unknown, CalculateFlamesDTO>,
@@ -21,6 +25,30 @@ export const calculate = async (
       statusCode: resStatusCode,
       message: 'Calculated',
       result,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const history = async (
+  req: Request<unknown, unknown, unknown, FlamesHistoryDTO>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { user, query } = req
+    const limit = Math.min(parseInt(query.limit || '50', 10), 50)
+
+    const skip = query.skip ? parseInt(query.skip) : 0
+
+    const history = await getFlamesHistory(user.id, limit, skip)
+
+    const resStatusCode = 200
+    res.status(resStatusCode).send({
+      statusCode: resStatusCode,
+      message: 'History',
+      history,
     })
   } catch (error) {
     next(error)

@@ -96,3 +96,28 @@ export const writeFlamesResult = async (
     throw error
   }
 }
+
+export const getFlamesHistory = async (
+  userId: string,
+  take: number,
+  skip: number,
+) => {
+  try {
+    const history = await prismaClient.flames_history.findMany({
+      select: {
+        name1: true,
+        name2: true,
+        result: true,
+        createdAt: true,
+      },
+      take,
+      skip,
+      where: {
+        user_id: userId,
+      },
+    })
+    return history
+  } catch (error) {
+    throw error
+  }
+}

@@ -22,5 +22,28 @@ export const CalculateFlamesDTO = z.object({
         'name2 should only contain letters (both lower and upper case) and whitespace',
     }),
 })
-
 export type CalculateFlamesDTO = z.input<typeof CalculateFlamesDTO>
+
+export const FlamesHistoryDTO = z.object({
+  skip: z
+    .string()
+    .transform((value) => {
+      const parsedValue = parseInt(value)
+      if (isNaN(parsedValue) || parsedValue < 0) {
+        throw new Error('skip should be a positive number')
+      }
+      return parsedValue
+    })
+    .optional(),
+  limit: z
+    .string()
+    .transform((value) => {
+      const parsedValue = parseInt(value)
+      if (isNaN(parsedValue) || parsedValue < 0) {
+        throw new Error('limit should be a positive number')
+      }
+      return parsedValue
+    })
+    .optional(),
+})
+export type FlamesHistoryDTO = z.input<typeof FlamesHistoryDTO>
