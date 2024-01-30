@@ -59,6 +59,19 @@ export const removeOldestSession = async (userId: string) => {
   }
 }
 
+export const getCurrentSession = async (userId: string, sessionId: string) => {
+  try {
+    const pattern = `${userId}_${sessionId}`
+    const allSessions = await getAllSessions(userId)
+    const currentSession = allSessions.find((session) =>
+      session.startsWith(pattern),
+    )
+    return currentSession
+  } catch (error) {
+    throw error
+  }
+}
+
 const getAllSessions = async (userId: string) => {
   try {
     const pattern = `${userId}_`

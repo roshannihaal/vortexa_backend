@@ -5,5 +5,6 @@ export {
   addNewSession,
   isMaxSessionsReached,
   removeOldestSession,
+  getCurrentSession,
 } from './RedisClient'
 export { prismaClient } from './PrismaClient'
