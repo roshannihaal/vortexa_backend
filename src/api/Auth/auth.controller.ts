@@ -5,6 +5,7 @@ import {
   addNewSession,
   isMaxSessionsReached,
   removeOldestSession,
+  removeCurrentSession,
 } from '../../utils'
 import { checkAndCreateUser, checkAndReturnUser } from './auth.service'
 
@@ -90,6 +91,26 @@ export const logIn = async (
       statusCode: resStatusCode,
       message: response.message,
       token,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { decodedToken } = req
+    await removeCurrentSession(decodedToken.userId, decodedToken.sessionId)
+
+    const resStatusCode = 200
+
+    res.status(resStatusCode).send({
+      statusCode: resStatusCode,
+      message: 'Successfully logged out',
     })
   } catch (error) {
     next(error)

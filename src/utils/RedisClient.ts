@@ -72,6 +72,20 @@ export const getCurrentSession = async (userId: string, sessionId: string) => {
   }
 }
 
+export const removeCurrentSession = async (
+  userId: string,
+  sessionId: string,
+) => {
+  try {
+    const key = await getCurrentSession(userId, sessionId)
+    if (key) {
+      await redisClient.del(key)
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const getAllSessions = async (userId: string) => {
   try {
     const pattern = `${userId}_`

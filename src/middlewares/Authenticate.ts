@@ -19,7 +19,7 @@ export const AuthenticateAndAttach = async (
     const decodedToken = verifyJwtToken(token)
 
     // Get current session from redis, throw error if not found
-    const currentSession = getCurrentSession(
+    const currentSession = await getCurrentSession(
       decodedToken.userId,
       decodedToken.sessionId,
     )
@@ -45,6 +45,8 @@ export const AuthenticateAndAttach = async (
     }
 
     req.user = user
+
+    req.decodedToken = decodedToken
     next()
   } catch (error) {
     res.status(401)

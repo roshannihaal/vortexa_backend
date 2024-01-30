@@ -1,3 +1,5 @@
+import { JwtPayload } from 'jsonwebtoken'
+
 export {}
 
 declare global {
@@ -9,6 +11,7 @@ declare global {
         email: string
         name: string
       }
+      decodedToken: JwtPayload
     }
   }
 }
