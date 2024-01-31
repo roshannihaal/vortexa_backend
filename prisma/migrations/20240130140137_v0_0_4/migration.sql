@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "FLAMES" ADD VALUE 'NO_RESULT';

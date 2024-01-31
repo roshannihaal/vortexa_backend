@@ -17,6 +17,7 @@ enum FLAMES {
   MARRIAGE
   ENEMY
   SIBLING
+  NO_RESULT
 }
 
 model user {
@@ -26,34 +27,45 @@ model user {
   name                  String
   password              String
   image                 Bytes?
+  active                Boolean          @default(true)
   flames_history        flames_history[]
   games_history_player1 games_history[]  @relation("player_1")
   games_history_player2 games_history[]  @relation("player_2")
   games_history_winner  games_history[]  @relation("winner")
+  createdAt             DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime         @default(now()) @updatedAt @db.Timestamptz(3)
 }
 
 model games {
   id           String          @id @unique
   name         String          @unique
+  active       Boolean         @default(true)
   game_history games_history[]
+  createdAt    DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime        @default(now()) @updatedAt @db.Timestamptz(3)
 }
 
 model flames_history {
-  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user    user   @relation(fields: [user_id], references: [id])
-  user_id String @db.Uuid
-  target  String
-  result  FLAMES
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user      user     @relation(fields: [user_id], references: [id])
+  user_id   String   @db.Uuid
+  name1     String
+  name2     String
+  result    FLAMES
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 }
 
 model games_history {
-  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  game       games  @relation(fields: [game_id], references: [id])
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  game       games    @relation(fields: [game_id], references: [id])
   game_id    String
-  player1    user   @relation("player_1", fields: [player1_id], references: [id])
-  player1_id String @db.Uuid
-  player2    user   @relation("player_2", fields: [player2_id], references: [id])
-  player2_id String @db.Uuid
-  winner     user   @relation("winner", fields: [winner_id], references: [id])
-  winner_id  String @db.Uuid
+  player1    user     @relation("player_1", fields: [player1_id], references: [id])
+  player1_id String   @db.Uuid
+  player2    user     @relation("player_2", fields: [player2_id], references: [id])
+  player2_id String   @db.Uuid
+  winner     user     @relation("winner", fields: [winner_id], references: [id])
+  winner_id  String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 }
