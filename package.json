@@ -1,12 +1,12 @@
 {
   "name": "vortexa_backend",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "dev": "nodemon ./src/index.ts"
+    "dev": "nodemon --files ./src/index.ts"
   },
   "keywords": [],
   "author": "",

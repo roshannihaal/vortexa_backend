@@ -28,3 +28,13 @@ export const getJwtExpiry = (token: string) => {
   const exp = decodedToken.exp
   return exp
 }
+
+export const verifyJwtToken = (token: string): JwtPayload => {
+  try {
+    const jwtSecret = config.JWT_SECRET
+    const decodedToken = jwt.verify(token, jwtSecret) as JwtPayload
+    return decodedToken
+  } catch (error) {
+    throw Error('Please authenticate')
+  }
+}

@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
-import { LoginDTO, SignupDTO } from './auth.dto'
+import { LoginDTO, LoginQueryDTO, SignupDTO } from './auth.dto'
 import {
   generateJwtToken,
   addNewSession,
   isMaxSessionsReached,
   removeOldestSession,
+  removeCurrentSession,
 } from '../../utils'
 import { checkAndCreateUser, checkAndReturnUser } from './auth.service'
 
@@ -50,7 +51,7 @@ export const signUp = async (
 }
 
 export const logIn = async (
-  req: Request<unknown, unknown, LoginDTO>,
+  req: Request<unknown, unknown, LoginDTO, LoginQueryDTO>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -90,6 +91,26 @@ export const logIn = async (
       statusCode: resStatusCode,
       message: response.message,
       token,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { decodedToken } = req
+    await removeCurrentSession(decodedToken.userId, decodedToken.sessionId)
+
+    const resStatusCode = 200
+
+    res.status(resStatusCode).send({
+      statusCode: resStatusCode,
+      message: 'Successfully logged out',
     })
   } catch (error) {
     next(error)
