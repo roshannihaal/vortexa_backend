@@ -6,7 +6,13 @@ import hpp from 'hpp'
 import { notFound, errorHandler } from './middlewares'
 import { connectToRedis, generateRSAKeys } from './utils'
 import { apiRouter } from './api'
+import http from 'http'
+import { Server } from 'socket.io'
+
 const app = express()
+const server = http.createServer(app)
+const io = new Server(server)
+
 const publicDirectoryPath = path.join(__dirname, '../public')
 
 app.use(express.static(publicDirectoryPath))
@@ -38,4 +44,4 @@ app.use('/api', apiRouter)
 app.use(notFound)
 app.use(errorHandler)
 
-export default app
+export { server, io }
