@@ -15,6 +15,7 @@ export const connectToRedis = async () => {
   await redisClient.connect()
 }
 
+// Users
 export const addNewSession = async (
   userId: string,
   sessionId: string,
@@ -107,6 +108,29 @@ const getAllSessions = async (userId: string) => {
     const pattern = `${userId}_`
     const { keys } = await redisClient.scan(0, { MATCH: `${pattern}*` })
     return keys
+  } catch (error) {
+    throw error
+  }
+}
+
+// Games
+export const doesGameRoomExists = async (roomName: string) => {
+  try {
+    const value = await redisClient.json.get(roomName)
+    return value ? true : false
+  } catch (error) {
+    throw error
+  }
+}
+
+export const createGameRoom = async (prefix: string, name: string) => {
+  try {
+    const roomName = `${prefix}_${name}`
+    await redisClient.json.set(roomName, '$', {
+      room: {
+        name: name,
+      },
+    })
   } catch (error) {
     throw error
   }

@@ -25,6 +25,11 @@ export const ConfigSchema = z.object({
     .string()
     .trim()
     .transform((value) => parseInt(value, 10)),
+  TICTACTOE_PREFIX: z.string().trim(),
+  ROOM_NAME_LENGTH: z
+    .string()
+    .trim()
+    .transform((value) => parseInt(value, 10)),
 })
 
 export type ConfigSchema = z.input<typeof ConfigSchema>

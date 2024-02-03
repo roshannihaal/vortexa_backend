@@ -7,5 +7,7 @@ export {
   removeOldestSession,
   getCurrentSession,
   removeCurrentSession,
+  doesGameRoomExists,
+  createGameRoom,
 } from './RedisClient'
 export { prismaClient } from './PrismaClient'

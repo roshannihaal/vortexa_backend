@@ -18,6 +18,8 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_EXPOSE_PORT=${REDIS_EXPOSE_PORT}
       - MAX_SESSIONS:${MAX_SESSIONS}
+      - TICTACTOE_PREFIX:${TICTACTOE_PREFIX}
+      - ROOM_NAME_LENGTH:${ROOM_NAME_LENGTH}
     ports:
       - ${PORT}:${PORT}
     extra_hosts:
