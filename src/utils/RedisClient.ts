@@ -2,7 +2,7 @@ import { createClient, RedisClientType } from 'redis'
 import { config } from '../config'
 import { getJwtExpiry } from './Jwt'
 import _ from 'lodash'
-import { RedisSessionObject } from './utils.dto'
+import { RedisSessionArray, RedisSessionObject } from './utils.dto'
 
 const redisHost = config.REDIS_HOST
 const redisPort = config.REDIS_EXPOSE_PORT
@@ -22,9 +22,12 @@ export const addNewSession = async (
 ) => {
   try {
     const tokenExpTime = getJwtExpiry(token)
-    const key = `${userId}_${sessionId}_${tokenExpTime}`
-    const value = JSON.stringify({ token, exp: tokenExpTime })
-    await redisClient.set(key, value, { EXAT: tokenExpTime })
+
+    const key = `${userId}_${sessionId}`
+    const value = { token }
+
+    await redisClient.json.set(key, '$', value)
+    await redisClient.expireAt(key, tokenExpTime)
   } catch (error) {
     throw error
   }
@@ -45,14 +48,27 @@ export const isMaxSessionsReached = async (userId: string) => {
 export const removeOldestSession = async (userId: string) => {
   try {
     const sessions = await getAllSessions(userId)
-    const parsedSessions = parseData(sessions)
 
-    const oldestSession = _.minBy(parsedSessions, 'tokenExpTime')
+    const multi = redisClient.multi()
+    for (let session of sessions) {
+      multi.json.get(session)
+    }
+
+    const tokens = RedisSessionObject.parse(await multi.exec())
+
+    const sessionArray: RedisSessionArray = sessions.map((key, index) => {
+      return {
+        key,
+        token: tokens[index].token,
+      }
+    })
+
+    const oldestSession = _.minBy(sessionArray, (data) => {
+      return getJwtExpiry(data.token)
+    })
 
     if (oldestSession) {
-      const key = getKeyFromObject(oldestSession)
-
-      await redisClient.del(key)
+      await redisClient.del(oldestSession.key)
     }
   } catch (error) {
     throw error
@@ -94,21 +110,4 @@ const getAllSessions = async (userId: string) => {
   } catch (error) {
     throw error
   }
-}
-
-const parseData = (data: string[]) => {
-  const parsedData = data.map((item) => {
-    const splitData = item.split('_')
-    return {
-      userId: splitData[0],
-      sessionId: splitData[1],
-      tokenExpTime: parseInt(splitData[2]),
-    }
-  })
-  return parsedData
-}
-
-const getKeyFromObject = (data: RedisSessionObject) => {
-  const stringifiedData = `${data.userId}_${data.sessionId}_${data.tokenExpTime}`
-  return stringifiedData
 }

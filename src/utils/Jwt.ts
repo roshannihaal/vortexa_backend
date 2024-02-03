@@ -23,9 +23,9 @@ export const generateJwtToken = (userId: string): GenerateJwtTokenResponse => {
   return response
 }
 
-export const getJwtExpiry = (token: string) => {
+export const getJwtExpiry = (token: string): number => {
   const decodedToken = jwt.decode(token) as JwtPayload
-  const exp = decodedToken.exp
+  const exp = decodedToken.exp as number
   return exp
 }
 
@@ -37,4 +37,9 @@ export const verifyJwtToken = (token: string): JwtPayload => {
   } catch (error) {
     throw Error('Please authenticate')
   }
+}
+
+export const decodeJwtToken = (token: string) => {
+  const decodedToken = jwt.decode(token) as JwtPayload
+  return decodedToken
 }
